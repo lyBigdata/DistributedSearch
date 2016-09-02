@@ -24,19 +24,19 @@ import org.apache.solr.common.SolrInputDocument;
  *
  * @author liuyu
  */
-public class SolrIndexer {
+public class SolrIndexerReadBbase {
 
     private String[] index = null;   //需要在solr中创建索引的字段
     private String url = null;     //solr服务的url
     private HttpSolrServer solrServer = null;  //solr服务实例
 
-    protected static Log LOG = LogFactory.getLog(SolrIndexer.class);
+    protected static Log LOG = LogFactory.getLog(SolrIndexerReadBbase.class);
 
     /**
      * 构造函数
      * @param pathName  配置文件路径及名称
      */
-    public SolrIndexer(String pathName) {
+    public SolrIndexerReadBbase(String pathName) {
 
         Properties pro = getPro(pathName);
         if(pro.getProperty("solrUrl").equals("")){
@@ -69,7 +69,7 @@ public class SolrIndexer {
         try {
             classLoader = Thread.currentThread().getContextClassLoader();
             if (null == classLoader) {
-                classLoader = SolrIndexer.class.getClassLoader();
+                classLoader = SolrIndexerReadBbase.class.getClassLoader();
             }
             InputStream inputStream = classLoader.getResourceAsStream(pathName);
 
@@ -146,5 +146,9 @@ public class SolrIndexer {
     public static void main(String[] args) throws IOException,
             SolrServerException {
 
+        final String tableName="userInfo";   //HBASE表名称
+        final String families="info";    //需要索引的字段所在的列族
+        SolrIndexerReadBbase solrIndexerReadBbase = new SolrIndexerReadBbase("solrconfig.properties");
+        solrIndexerReadBbase.createIndexsFromHbaseReadData(tableName,families);
     }
 }
